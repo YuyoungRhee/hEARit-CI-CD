@@ -9,9 +9,11 @@ on:
       - 'backend/**'
   workflow_dispatch:
 
+env:
+  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+
 jobs:
   build:
-    name: CI Build
     runs-on: ubuntu-latest
 
     services:
@@ -20,9 +22,12 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: hearit_db
-        options: --health-cmd="mysqladmin ping -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }}" --health-interval=10s --health-timeout=5s --health-retries=5
+          MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+        options: >-
+          --health-cmd="mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     defaults:
       run:
@@ -46,7 +51,7 @@ jobs:
         run: |
           mkdir -p src/main/resources
           cat <<EOF > src/main/resources/application-secret.properties
-          mysql.root.password=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          mysql.root.password=$MYSQL_ROOT_PASSWORD
           jwt.secret=${{ secrets.JWT_SECRET }}
           jwt.expiration=${{ secrets.JWT_EXPIRATION }}
           server.port=${{ secrets.SERVER_PORT }}
@@ -60,8 +65,6 @@ jobs:
 
       - name: Run Tests
         run: ./gradlew test
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
       - name: Build with Gradle
         run: ./gradlew build -x test
