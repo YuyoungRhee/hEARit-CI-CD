@@ -48,20 +48,7 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
-        
-      - name: Create application-secret.properties
-        run: |
-          mkdir -p backend/src/main/resources
-          echo "mysql.root.password=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> backend/src/main/resources/application-secret.properties
-          echo "jwt.secret=${{ secrets.JWT_SECRET }}" >> backend/src/main/resources/application-secret.properties
-          echo "jwt.expiration=${{ secrets.JWT_EXPIRATION }}" >> backend/src/main/resources/application-secret.properties
-          echo "amazon.s3.bucket.url=${{ secrets.AMAZON_S3_BUCKET_URL }}" >> backend/src/main/resources/application-secret.properties
-          echo "db.mysql.host=${{ secrets.DB_MYSQL_HOST }}" >> backend/src/main/resources/application-secret.properties
-          echo "server.port=80" >> backend/src/main/resources/application-secret.properties
 
-      - name: Check contents of application-secret.properties
-        run: cat backend/src/main/resources/application-secret.properties
-        
       - name: Run tests
         run: ./gradlew test
       
