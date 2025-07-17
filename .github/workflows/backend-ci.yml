@@ -35,12 +35,8 @@ jobs:
       - name: Start test DB with docker compose
         run: docker compose -f docker-compose.yml up -d hearit-test-db
 
-      - name: Extract mapped MySQL port
-        id: extract-mysql-port
-        run: |
-          PORT=$(docker port hearit-test-mysql 3306/tcp | cut -d: -f2)
-          echo "MySQL mapped port: $PORT"
-          echo "MYSQL_MAPPED_PORT=$PORT" >> $GITHUB_ENV
+      - name: Print MySQL Port Mapping
+        run: docker port hearit-test-mysql
 
       - name: Generate application-secret.properties
         run: |
@@ -55,6 +51,9 @@ jobs:
           db.mysql.port=${{ secrets.DB_MYSQL_PORT }}
           EOF
 
+      - name: Debug - Show generated application-secret.properties
+        run: cat src/main/resources/application-secret.properties
+        
       - name: Run Tests
         run: ./gradlew test
         env:
