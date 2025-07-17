@@ -32,17 +32,6 @@ jobs:
         with:
           gradle-version: current
 
-      - name: Start test DB with docker compose
-        run: docker compose -f docker-compose.yml up -d hearit-test-db
-
-      - name: Wait for MySQL to be ready
-        run: |
-          until docker exec hearit-test-db mysql -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "SELECT 1" > /dev/null 2>&1; do
-            echo "Waiting for MySQL to initialize..."
-            sleep 3
-          done
-          echo "MySQL is ready!"
-
       - name: Generate application-secret.properties
         run: |
           mkdir -p src/main/resources
@@ -54,6 +43,17 @@ jobs:
           amazon.s3.bucket.url=${{ secrets.AMAZON_S3_BUCKET_URL }}
           db.mysql.host=${{ secrets.DB_MYSQL_HOST }}
           EOF
+          
+      - name: Start test DB with docker compose
+        run: docker compose -f docker-compose.yml up -d hearit-test-db
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until docker exec hearit-test-db mysql -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "SELECT 1" > /dev/null 2>&1; do
+            echo "Waiting for MySQL to initialize..."
+            sleep 3
+          done
+          echo "MySQL is ready!"
 
       - name: Run Tests
         run: ./gradlew test
