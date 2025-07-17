@@ -32,8 +32,8 @@ jobs:
         with:
           gradle-version: current
 
-      - name: Start test DB with docker-compose
-        run: docker-compose -f docker-compose.yml up -d hearit-test-db
+      - name: Start test DB with docker compose
+        run: docker compose -f docker-compose.yml up -d hearit-test-db
 
       - name: Wait for MySQL to be ready
         run: |
