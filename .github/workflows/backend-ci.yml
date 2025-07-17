@@ -51,7 +51,8 @@ jobs:
           jwt.expiration=${{ secrets.JWT_EXPIRATION }}
           server.port=${{ secrets.SERVER_PORT }}
           amazon.s3.bucket.url=${{ secrets.AMAZON_S3_BUCKET_URL }}
-          db.mysql.host=localhost:${{ secrets.DB_MYSQL_HOST }}
+          db.mysql.host=${{ secrets.DB_MYSQL_HOST }}
+          db.mysql.port=${{ secrets.DB_MYSQL_PORT }}
           EOF
 
       - name: Run Tests
