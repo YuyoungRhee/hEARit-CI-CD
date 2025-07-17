@@ -51,7 +51,7 @@ jobs:
         
       - name: Create application-secret.properties
         run: |
-          mkdir -p backend/src/main/resources
+          mkdir -p src/main/resources
           echo "mysql.root.password=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> backend/src/main/resources/application-secret.properties
           echo "jwt.secret=${{ secrets.JWT_SECRET }}" >> backend/src/main/resources/application-secret.properties
           echo "jwt.expiration=${{ secrets.JWT_EXPIRATION }}" >> backend/src/main/resources/application-secret.properties
@@ -60,7 +60,7 @@ jobs:
           echo "server.port=80" >> backend/src/main/resources/application-secret.properties
 
       - name: Check contents of application-secret.properties
-        run: cat backend/src/main/resources/application-secret.properties
+        run: cat src/main/resources/application-secret.properties
         
       - name: Run tests
         run: ./gradlew test
