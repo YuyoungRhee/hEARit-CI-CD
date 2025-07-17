@@ -49,20 +49,6 @@ jobs:
 
       - name: Print docker port hearit-test-mysql
         run: docker port hearit-test-mysql
-        
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..20}; do
-            if docker exec hearit-test-db mysqladmin ping -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} --silent; then
-              echo "MySQL is ready!"
-              exit 0
-            fi
-            echo "Waiting for MySQL to initialize..."
-            sleep 3
-          done
-          echo "❌ MySQL failed to start in time"
-          docker logs hearit-test-db
-          exit 1
 
       - name: Run Tests
         run: ./gradlew test
