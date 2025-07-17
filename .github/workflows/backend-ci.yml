@@ -64,6 +64,14 @@ jobs:
       - name: Debug - Show generated application-secret.properties
         run: cat src/main/resources/application-secret.properties
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..10}; do
+            docker exec hearit-test-mysql mysqladmin ping -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} --silent && break
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
+          
       - name: Run Tests
         run: ./gradlew test
 
