@@ -38,4 +38,4 @@ out/
 
 .DS_store
 .env
-application-secret.properties
+.env.local
