@@ -32,6 +32,16 @@ jobs:
         with:
           gradle-version: current
 
+      - name: Start test DB with docker compose
+        run: docker compose -f docker-compose.yml up -d hearit-test-db
+
+      - name: Extract mapped MySQL port
+        id: extract-mysql-port
+        run: |
+          PORT=$(docker port hearit-test-mysql 3306/tcp | cut -d: -f2)
+          echo "MySQL mapped port: $PORT"
+          echo "MYSQL_MAPPED_PORT=$PORT" >> $GITHUB_ENV
+
       - name: Generate application-secret.properties
         run: |
           mkdir -p src/main/resources
@@ -41,19 +51,12 @@ jobs:
           jwt.expiration=${{ secrets.JWT_EXPIRATION }}
           server.port=${{ secrets.SERVER_PORT }}
           amazon.s3.bucket.url=${{ secrets.AMAZON_S3_BUCKET_URL }}
-          db.mysql.host=${{ secrets.DB_MYSQL_HOST }}
+          db.mysql.host=localhost:${MYSQL_MAPPED_PORT}
           EOF
-          
-      - name: Start test DB with docker compose
-        run: docker compose -f docker-compose.yml up -d hearit-test-db
-
-      - name: Print docker port hearit-test-mysql
-        run: docker port hearit-test-mysql
 
       - name: Run Tests
         run: ./gradlew test
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/hearit_db
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
       - name: Build with Gradle
