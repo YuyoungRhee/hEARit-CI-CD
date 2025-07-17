@@ -47,6 +47,9 @@ jobs:
       - name: Start test DB with docker compose
         run: docker compose -f docker-compose.yml up -d hearit-test-db
 
+      - name: Print docker port hearit-test-mysql
+        run: docker port hearit-test-mysql
+        
       - name: Wait for MySQL to be ready
         run: |
           until docker exec hearit-test-db mysql -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "SELECT 1" > /dev/null 2>&1; do
