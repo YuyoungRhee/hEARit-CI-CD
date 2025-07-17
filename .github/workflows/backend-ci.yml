@@ -14,6 +14,16 @@ jobs:
     name: CI Build
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: hearit_db
+        options: --health-cmd="mysqladmin ping -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }}" --health-interval=10s --health-timeout=5s --health-retries=5
+
     defaults:
       run:
         working-directory: backend
@@ -32,12 +42,6 @@ jobs:
         with:
           gradle-version: current
 
-      - name: Start test DB with docker compose
-        run: docker compose -f docker-compose.yml up -d hearit-test-db
-
-      - name: Print MySQL Port Mapping
-        run: docker port hearit-test-mysql
-
       - name: Generate application-secret.properties
         run: |
           mkdir -p src/main/resources
@@ -47,13 +51,13 @@ jobs:
           jwt.expiration=${{ secrets.JWT_EXPIRATION }}
           server.port=${{ secrets.SERVER_PORT }}
           amazon.s3.bucket.url=${{ secrets.AMAZON_S3_BUCKET_URL }}
-          db.mysql.host=${{ secrets.DB_MYSQL_HOST }}
-          db.mysql.port=${{ secrets.DB_MYSQL_PORT }}
+          db.mysql.host=127.0.0.1
+          db.mysql.port=3306
           EOF
 
       - name: Debug - Show generated application-secret.properties
         run: cat src/main/resources/application-secret.properties
-        
+
       - name: Run Tests
         run: ./gradlew test
         env:
