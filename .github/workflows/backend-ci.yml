@@ -52,7 +52,7 @@ jobs:
       - name: Create application-secret.properties
         run: |
           mkdir -p backend/src/test/resources
-          cat <<EOF > backend/src/test/resources/application-secret.properties
+          cat <<EOF > backend/src/main/resources/application-secret.properties
           mysql.root.password=${{ secrets.MYSQL_ROOT_PASSWORD }}
           jwt.secret=${{ secrets.JWT_SECRET }}
           jwt.expiration=${{ secrets.JWT_EXPIRATION }}
